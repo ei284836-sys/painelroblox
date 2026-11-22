@@ -1,8 +1,7 @@
 -- =========================================================
--- JDEV BLOX🤫🌙 — Painel Premium Executável
+-- JDEV BLOX🤫🌙 — Painel Premium Executável v3.1 (FIXED)
 -- Autor: JDEV
--- Versão: 3.0 Ultimate
--- Compatível com: Synapse X, Script Hub, Krnl, Fluxus, JJSploit
+-- Compatível: Synapse X, Script Hub, Krnl, Fluxus, JJSploit, Hydrogen
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -10,7 +9,6 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
-local StarterGui = game:GetService("StarterGui")
 
 -- ==========================================
 -- CONFIGURAÇÕES GERAIS DO PAINEL
@@ -27,8 +25,6 @@ local PanelConfig = {
         CardBg = Color3.fromRGB(25, 22, 40),
         CardHover = Color3.fromRGB(35, 30, 55),
         Accent = Color3.fromRGB(168, 85, 247), -- Roxo neon
-        Accent2 = Color3.fromRGB(99, 102, 241), -- Índigo
-        Accent3 = Color3.fromRGB(59, 130, 246), -- Azul
         TextPrimary = Color3.fromRGB(228, 228, 255),
         TextSecondary = Color3.fromRGB(148, 163, 184),
         BorderColor = Color3.fromRGB(139, 92, 246),
@@ -54,8 +50,6 @@ local GamesList = {
             print("   → ESP Players/Items/Traps: ON")
             print("   → God Mode: ON")
             print("   → Teleports: LOBBY, ARENA, SHOP, SAFEZONE")
-            -- Aqui você coloca o script real do MOG OR DIE
-            -- Exemplo: loadstring(game:HttpGet("https://..."))()
         end
     },
     {
@@ -68,7 +62,6 @@ local GamesList = {
             print("   → Auto Quest: ON")
             print("   → Auto Raid: ON")
             print("   → Teleport System: ON")
-            print("   → Fast Swim/Fly: ON")
         end
     },
     {
@@ -92,7 +85,6 @@ local GamesList = {
             print("   → Auto Hatch: ON")
             print("   → Auto Farm: ON")
             print("   → Huge Pets ESP: ON")
-            print("   → Infinite Enchant: ON")
         end
     },
     {
@@ -104,7 +96,6 @@ local GamesList = {
             print("   → ESP Players: ON")
             print("   → Aimbot: ON")
             print("   → No Recoil: ON")
-            print("   → Fast Reload: ON")
         end
     },
     {
@@ -116,7 +107,6 @@ local GamesList = {
             print("   → Auto Attack: ON")
             print("   → Auto Heal: ON")
             print("   → ESP: ON")
-            print("   → Damage Boost: 1000x")
         end
     },
     {
@@ -165,11 +155,6 @@ local function Create(FrameClass, Properties)
     return Object
 end
 
-local function RoundNumber(num, decimals)
-    local multiplier = 10 ^ (decimals or 0)
-    return math.floor(num * multiplier + 0.5) / multiplier
-end
-
 -- ==========================================
 -- CRIAÇÃO DO PAINEL PRINCIPAL
 -- ==========================================
@@ -188,13 +173,11 @@ local MainFrame = Create("Frame", {
     Parent = ScreenGui
 })
 
--- Bordas arredondadas via UICorner
 local Corner = Create("UICorner", {
     CornerRadius = UDim.new(0, 16),
     Parent = MainFrame
 })
 
--- Sombra/Glow externo
 local Shadow = Create("UIStroke", {
     Color = PanelConfig.Theme.Accent,
     Thickness = 1.5,
@@ -227,22 +210,17 @@ local MoonContainer = Create("Frame", {
     Parent = HeaderFrame
 })
 
--- Glow da lua
-local MoonGlow = Create("ImageLabel", {
-    Image = "rbxassetid://4458701180", -- Star/sparkle asset
-    ScaleType = Enum.ScaleType.Tile,
-    TileSize = UDim2.new(0, 40, 0, 40),
-    Size = UDim2.new(0, 55, 0, 55),
-    Position = UDim2.new(0, -2.5, 0, -2.5),
-    BackgroundTransparency = 1,
-    ImageTransparency = 0.7,
-    Rotation = 45,
+-- Glow da lua (usando UIStroke ao invés de ImageLabel para evitar assets quebrados)
+local MoonGlow = Create("UIStroke", {
+    Color = PanelConfig.Theme.Accent,
+    Thickness = 4,
+    ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
     Parent = MoonContainer
 })
 
--- Círculo principal (lua crescente simulada)
+-- Círculo principal (lua)
 local MoonCircle = Create("ImageLabel", {
-    Image = "rbxassetid://4446701180", -- Usando um asset genérico de círculo/lua
+    Image = "rbxassetid://4446701180", 
     ScaleType = Enum.ScaleType.Fit,
     Size = UDim2.new(0, 48, 0, 48),
     BackgroundTransparency = 0,
@@ -253,19 +231,6 @@ local MoonCircle = Create("ImageLabel", {
 local MoonInnerCorner = Create("UICorner", {
     CornerRadius = UDim.new(1, 0),
     Parent = MoonCircle
-})
-
--- Brilho interno da lua
-local MoonShine = Create("ImageLabel", {
-    Image = "rbxassetid://1397539394", -- Sparkle
-    ScaleType = Enum.ScaleType.Tile,
-    TileSize = UDim2.new(0, 20, 0, 20),
-    Size = UDim2.new(0, 50, 0, 50),
-    Position = UDim2.new(0, -1, 0, -1),
-    BackgroundTransparency = 1,
-    ImageTransparency = 0.85,
-    Rotation = 0,
-    Parent = MoonContainer
 })
 
 -- Texto "JDEV BLOX" ao lado da lua
@@ -283,7 +248,6 @@ local TitleText = Create("TextLabel", {
     Parent = HeaderFrame
 })
 
--- Emoji 🤫🌙 como subtítulo decorativo
 local SubtitleText = Create("TextLabel", {
     Name = "Subtitle",
     Size = UDim2.new(1, -75, 0, 20),
@@ -337,7 +301,6 @@ for i, GameData in ipairs(GamesList) do
         Parent = Card
     })
 
-    -- Ícone do jogo
     local IconLabel = Create("TextLabel", {
         Name = "Icon",
         Size = UDim2.new(0, 45, 0, 45),
@@ -348,7 +311,6 @@ for i, GameData in ipairs(GamesList) do
         Parent = Card
     })
 
-    -- Nome do jogo
     local NameLabel = Create("TextLabel", {
         Name = "Name",
         Size = UDim2.new(1, -70, 0, 25),
@@ -362,7 +324,6 @@ for i, GameData in ipairs(GamesList) do
         Parent = Card
     })
 
-    -- Status
     local StatusLabel = Create("TextLabel", {
         Name = "Status",
         Size = UDim2.new(1, -70, 0, 20),
@@ -376,7 +337,6 @@ for i, GameData in ipairs(GamesList) do
         Parent = Card
     })
 
-    -- Botão de execução
     local ExecuteBtn = Create("TextButton", {
         Name = "ExecuteBtn",
         Size = UDim2.new(0, 55, 0, 35),
@@ -395,7 +355,6 @@ for i, GameData in ipairs(GamesList) do
         Parent = ExecuteBtn
     })
 
-    -- Hover effects
     Card.MouseEnter:Connect(function()
         if GameData.Status == "active" then
             TweenService:Create(Card, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -410,12 +369,10 @@ for i, GameData in ipairs(GamesList) do
         }):Play()
     end)
 
-    -- Clique no card ou botão
     local function OnClick()
         if GameData.Status == "brew" then
             ShowBrewModal(GameData.Name)
         else
-            -- Executa o script
             pcall(function()
                 GameData.ScriptFunc()
             end)
@@ -426,15 +383,14 @@ for i, GameData in ipairs(GamesList) do
     Card.MouseButton1Click:Connect(OnClick)
     ExecuteBtn.MouseButton1Click:Connect(OnClick)
 
-    -- Animação de entrada
     Card.Visible = false
-    spawn(function()
+    coroutine.wrap(function()
         wait(0.1 * i)
         TweenService:Create(Card, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             BackgroundTransparency = 0
         }):Play()
         Card.Visible = true
-    end)
+    end)()
 
     table.insert(GameCards, Card)
 end
@@ -535,7 +491,6 @@ function ShowBrewModal(gameName)
     BrewMessage.Text = "O script para \"" .. gameName .. "\" ainda está sendo desenvolvido.\nEscolha outro jogo abaixo!"
     BrewModal.Visible = true
     
-    -- Animação de entrada
     TweenService:Create(ModalContent, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
         ScaleX = 1.1,
         ScaleY = 1.1
@@ -637,12 +592,12 @@ end)
 MainFrame.Size = UDim2.new(0, 0, 0, 0)
 MainFrame.Position = UDim2.new(0, PanelConfig.X, 0, PanelConfig.Y)
 
-spawn(function()
+coroutine.wrap(function()
     wait(0.2)
     TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, PanelConfig.Width, 0, PanelConfig.Height)
     }):Play()
-end)
+end)()
 
 -- ==========================================
 -- BOTÃO MINIMIZAR/FECHAR (Canto superior direito)
